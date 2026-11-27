@@ -1,12 +1,12 @@
-// Replace these placeholders with your Firebase project's web app config.
-// Never put service-account keys or private secrets in frontend code.
 export const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_APP_ID"
+  apiKey: "AIzaSyARiMUuNFevJ8N_5YUFMUWQE6s9Nr46NbA",
+  authDomain: "akstarglobal-4ae5a.firebaseapp.com",
+  databaseURL: "https://akstarglobal-4ae5a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "akstarglobal-4ae5a",
+  storageBucket: "akstarglobal-4ae5a.firebasestorage.app",
+  messagingSenderId: "757697177375",
+  appId: "1:757697177375:web:d3e46cf965750f5c5e722a",
+  measurementId: "G-S7MZ2FR6R1"
 };
+
 export const firebaseEnabled = !Object.values(firebaseConfig).some(v => String(v).includes("YOUR_"));
