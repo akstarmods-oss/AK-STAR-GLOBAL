@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore live applications, websites, music productions and digital products built under the AK STAR GLOBAL ecosystem.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Portfolio & Ecosystem — AK STAR GLOBAL">
+  <meta property="og:image" content="https://akstarglobal.vercel.app/LOGO.png">
   <title>Portfolio — AK STAR GLOBAL</title>
   <link rel="icon" type="image/png" href="LOGO.png">
   <link rel="apple-touch-icon" href="LOGO.png">
@@ -27,15 +31,73 @@
   </nav>
 </header>
 <main class="inner-page section-wrap">
-  <div class="eyebrow"><i></i> SELECTED WORK</div>
+  <div class="eyebrow"><i></i> SELECTED WORK &amp; ECOSYSTEM</div>
   <h1>Proof is in the <em>work.</em></h1>
-  <p class="page-lead">This space showcases completed projects, case studies and creative productions across our design, media and software divisions.</p>
-  <div class="portfolio-grid">
-    <div class="portfolio-tile tile-one"><span>01 / VISUAL DESIGN</span><b>Brand<br>identity</b></div>
-    <div class="portfolio-tile tile-two"><span>02 / MOTION & AUDIO</span><b>Video &amp;<br>music studio</b></div>
-    <div class="portfolio-tile tile-three"><span>03 / DIGITAL</span><b>Web &amp; app<br>experiences</b></div>
+  <p class="page-lead">Explore live applications, web platforms, music productions and design systems built across AK STAR GLOBAL divisions.</p>
+
+  <div class="filter-bar" role="tablist" aria-label="Filter projects by category">
+    <button class="filter-btn active" type="button" data-filter="all">All Work</button>
+    <button class="filter-btn" type="button" data-filter="apps-web">Apps &amp; Web</button>
+    <button class="filter-btn" type="button" data-filter="music-video">Music &amp; Video</button>
+    <button class="filter-btn" type="button" data-filter="design">Creative Design</button>
   </div>
-  <p class="small-note">Showcase categories above represent our core production divisions. Detailed case studies are updated as approved projects go live.</p>
+
+  <div class="portfolio-grid" id="portfolioGrid">
+    <article class="project-card" data-category="apps-web">
+      <div>
+        <span class="project-tag">APP &amp; WEB ECOSYSTEM</span>
+        <h3>AK Star Store &amp; App Hub</h3>
+        <p>Official web portal and Android distribution hub featuring real-time cloud updates, release channels and app discovery.</p>
+      </div>
+      <a class="project-link" href="https://ak-star-store-app-hub-website.vercel.app/" target="_blank" rel="noopener noreferrer">Visit live hub ↗</a>
+    </article>
+
+    <article class="project-card" data-category="music-video">
+      <div>
+        <span class="project-tag">MUSIC &amp; FILM STUDIO</span>
+        <h3>AK Star Music Production</h3>
+        <p>Original Odia and Hindi tracks, commercial DJ remixes, audio mastering and custom lyric &amp; promotional video releases.</p>
+      </div>
+      <a class="project-link" href="contact.html?service=Music%20Production">Book audio/video production ↗</a>
+    </article>
+
+    <article class="project-card" data-category="design">
+      <div>
+        <span class="project-tag">DIGITAL PRODUCTS &amp; DESIGN</span>
+        <h3>Ak Studio Invitations</h3>
+        <p>Interactive digital wedding and event invitation platform supporting Odia, Hindi and English with real-time media templates.</p>
+      </div>
+      <a class="project-link" href="contact.html?service=Creative%20Design">Request custom design ↗</a>
+    </article>
+
+    <article class="project-card" data-category="apps-web">
+      <div>
+        <span class="project-tag">SOFTWARE SOLUTIONS</span>
+        <h3>AkBilling &amp; Inventory Suite</h3>
+        <p>Hospitality billing, LAN/Wi-Fi thermal KOT printing, digital menus and real-time beverage stock tracking applications.</p>
+      </div>
+      <a class="project-link" href="contact.html?service=Software%20Solutions">Enquire for business software ↗</a>
+    </article>
+
+    <article class="project-card" data-category="apps-web">
+      <div>
+        <span class="project-tag">AI SOLUTIONS</span>
+        <h3>Salony AI Voice Assistant</h3>
+        <p>Real-time voice-to-voice conversational Android assistant built with modern generative AI APIs for hands-free interaction.</p>
+      </div>
+      <a class="project-link" href="contact.html?service=AI%20Solutions">Explore AI solutions ↗</a>
+    </article>
+
+    <article class="project-card" data-category="design">
+      <div>
+        <span class="project-tag">BRAND IDENTITY</span>
+        <h3>AK STAR GLOBAL Master System</h3>
+        <p>Unified visual architecture, color governance, typography guidelines and digital web presence connecting nine service divisions.</p>
+      </div>
+      <a class="project-link" href="services.html">Explore all 9 divisions ↗</a>
+    </article>
+  </div>
+
   <a class="btn btn-gold" href="contact.html">Create something together ↗</a>
 </main>
 <footer class="footer">
@@ -43,14 +105,18 @@
     <a class="brand" href="index.html" aria-label="AK STAR GLOBAL home">
       <img src="LOGO.png" alt="AK STAR GLOBAL" class="footer-logo">
     </a>
-    <p>ONE BRAND. EVERY POSSIBILITY.</p>
+    <div class="social-row">
+      <a class="social-pill" href="https://ak-star-store-app-hub-website.vercel.app/" target="_blank" rel="noopener noreferrer">App Hub ↗</a>
+      <a class="social-pill" href="https://t.me/akstarmods" target="_blank" rel="noopener noreferrer">Telegram ↗</a>
+      <a class="social-pill" href="https://whatsapp.com/channel/0029VbCWnLiK5cDFgzgPH017" target="_blank" rel="noopener noreferrer">WhatsApp Channel ↗</a>
+    </div>
   </div>
   <div class="footer-bottom">
-    <span>© <span id="year"></span> AK STAR GLOBAL. All rights reserved.</span>
+    <span>© <span id="year"></span> AK STAR GLOBAL. ONE BRAND. EVERY POSSIBILITY.</span>
     <div>
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Terms</a>
-      <a href="index.html">Back to home ↑</a>
+      <a href="refund.html">Refund Policy</a>
     </div>
   </div>
 </footer>
