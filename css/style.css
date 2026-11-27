@@ -71,7 +71,7 @@ a {
 nav {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 28px;
 }
 
 nav a {
@@ -191,7 +191,7 @@ h2 em,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 14px;
   padding: 15px 24px;
   font-family: var(--display);
   font-weight: 700;
@@ -210,6 +210,16 @@ h2 em,
 .btn-gold:hover {
   filter: brightness(1.08);
   transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--gold2);
+}
+
+.btn-outline:hover {
+  background: rgba(216, 180, 90, 0.1);
 }
 
 .btn-gold:disabled {
@@ -359,8 +369,8 @@ h2 em,
 }
 
 .intro {
-  padding-top: 120px;
-  padding-bottom: 125px;
+  padding-top: 115px;
+  padding-bottom: 120px;
   display: grid;
   grid-template-columns: 0.7fr 1.3fr;
   gap: 60px;
@@ -382,7 +392,7 @@ h2 {
   display: inline-block;
   margin-top: 17px;
   border-bottom: 1px solid var(--line);
-  padding-bottom: 8px;
+  padding-bottom: 6px;
 }
 
 .services-section {
@@ -460,9 +470,112 @@ h2 {
   color: var(--gold);
 }
 
+/* Process Section */
+.process-section {
+  padding-top: 115px;
+  padding-bottom: 115px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  margin-top: 42px;
+}
+
+.process-step {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 28px 24px;
+}
+
+.process-step span {
+  display: inline-block;
+  font: 700 11px var(--display);
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.process-step h3 {
+  font: 700 18px var(--display);
+  margin-bottom: 10px;
+}
+
+.process-step p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* FAQ Accordion */
+.faq-section {
+  background: var(--panel);
+  padding-top: 110px;
+  padding-bottom: 110px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.faq-list {
+  display: grid;
+  gap: 14px;
+  max-width: 880px;
+  margin-top: 38px;
+}
+
+.faq-item {
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
+.faq-question {
+  width: 100%;
+  background: none;
+  border: 0;
+  color: var(--text);
+  font: 600 15px var(--display);
+  text-align: left;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  cursor: pointer;
+}
+
+.faq-question:hover {
+  color: var(--gold2);
+}
+
+.faq-icon {
+  color: var(--gold);
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.faq-item.open .faq-icon {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  display: none;
+  padding: 0 24px 22px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
+}
+
 .manifesto {
-  padding-top: 125px;
-  padding-bottom: 125px;
+  padding-top: 120px;
+  padding-bottom: 120px;
 }
 
 .manifesto p {
@@ -504,7 +617,7 @@ h2 {
 }
 
 .footer {
-  padding: 40px 10vw 28px;
+  padding: 44px 10vw 30px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: #0D0E11;
 }
@@ -513,15 +626,38 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 32px;
+  padding-bottom: 28px;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .footer-top p {
   color: var(--muted);
   font-size: 12px;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   margin: 0;
+}
+
+.social-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.social-pill {
+  border: 1px solid var(--line);
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  color: var(--gold2);
+  background: rgba(26, 28, 33, 0.6);
+  transition: 0.2s;
+}
+
+.social-pill:hover {
+  background: var(--gold);
+  color: #101114;
 }
 
 .footer-bottom {
@@ -534,11 +670,13 @@ h2 {
   color: #848179;
   font-size: 11px;
   letter-spacing: 0.6px;
+  flex-wrap: wrap;
 }
 
 .footer-bottom div {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .footer-bottom a:hover {
@@ -557,7 +695,7 @@ h2 {
 
 .page-lead {
   font-size: 16px;
-  margin-bottom: 75px;
+  margin-bottom: 65px;
 }
 
 .inner-split,
@@ -628,46 +766,103 @@ h2 {
   max-width: 460px;
 }
 
+.service-cta {
+  display: inline-block;
+  margin-top: 10px;
+  font: 600 12px var(--display);
+  color: var(--gold2);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+}
+
+.service-cta:hover {
+  color: var(--gold);
+}
+
+/* Portfolio Filters & Showcase Cards */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.filter-btn {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 10px 18px;
+  font: 600 12px var(--display);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: var(--gold);
+  color: #101114;
+  border-color: var(--gold);
+}
+
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 22px;
+  gap: 22px;
+  margin-bottom: 36px;
 }
 
-.portfolio-tile {
-  height: 300px;
+.project-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
   padding: 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid var(--line);
-  background: radial-gradient(circle at 70% 20%, #44361D, var(--panel) 55%, var(--bg));
+  min-height: 290px;
+  transition: 0.25s;
 }
 
-.tile-two {
-  background: radial-gradient(circle at 30% 70%, #382E1B, var(--panel) 55%, var(--bg));
+.project-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
 }
 
-.tile-three {
-  background: radial-gradient(circle at 70% 80%, #524022, var(--panel) 55%, var(--bg));
+.project-card.hidden {
+  display: none;
 }
 
-.portfolio-tile span {
+.project-tag {
   font-size: 10px;
   color: var(--gold);
   letter-spacing: 2px;
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: block;
 }
 
-.portfolio-tile b {
-  font: 700 32px/1.15 var(--display);
+.project-card h3 {
+  font: 700 22px var(--display);
+  margin-bottom: 12px;
 }
 
-.small-note {
-  font-size: 12px;
+.project-card p {
   color: var(--muted);
-  margin: 0 0 40px;
+  font-size: 13px;
+  line-height: 1.75;
+  margin-bottom: 22px;
+}
+
+.project-link {
+  font: 600 12px var(--display);
+  color: var(--gold2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.project-link:hover {
+  color: var(--gold);
 }
 
 .contact-layout {
@@ -678,19 +873,42 @@ h2 {
   margin-top: 20px;
 }
 
-.contact-note {
-  border-left: 2px solid var(--gold);
-  padding-left: 16px;
-  margin-top: 38px;
-  font: 700 14px var(--display);
-  letter-spacing: 1px;
+.contact-channels {
+  display: grid;
+  gap: 12px;
+  margin-top: 32px;
 }
 
-.contact-note span {
-  font: 400 12px var(--font);
+.channel-card {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.2s;
+}
+
+.channel-card:hover {
+  border-color: var(--gold);
+  background: #222019;
+}
+
+.channel-card strong {
+  display: block;
+  font: 700 13px var(--display);
+  color: var(--text);
+}
+
+.channel-card span {
+  font-size: 12px;
   color: var(--muted);
-  display: inline-block;
-  margin-top: 4px;
+}
+
+.channel-card i {
+  font-style: normal;
+  color: var(--gold);
+  font-weight: 700;
 }
 
 .contact-form {
@@ -725,16 +943,12 @@ h2 {
   border-color: var(--gold);
 }
 
-.contact-form small,
-.form-status {
-  color: var(--muted);
-  font-size: 12px;
-}
-
 .form-status {
   min-height: 18px;
   margin: 0;
+  font-size: 12px;
   font-weight: 500;
+  color: var(--muted);
 }
 
 .form-status[data-state="success"] {
@@ -769,6 +983,118 @@ h2 {
   font-size: 14px;
   line-height: 1.85;
   margin: 0;
+}
+
+/* Floating WhatsApp Connect Button */
+.whatsapp-float {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 60;
+  background: #101114;
+  border: 1px solid var(--gold);
+  color: var(--gold2);
+  padding: 12px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 12px var(--display);
+  letter-spacing: 0.4px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+  transition: 0.2s;
+}
+
+.whatsapp-float:hover {
+  background: var(--gold);
+  color: #101114;
+  transform: translateY(-2px);
+}
+
+.whatsapp-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #25D366;
+  display: inline-block;
+}
+
+/* Admin Panel Styles */
+.admin-box {
+  max-width: 440px;
+  margin: 40px auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 36px 32px;
+}
+
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+
+.admin-list {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 22px;
+  display: grid;
+  gap: 10px;
+}
+
+.admin-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  color: var(--gold2);
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.admin-select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  font: 12px var(--font);
+}
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid rgba(242, 139, 130, 0.4);
+  color: #F28B82;
+  padding: 8px 14px;
+  font: 600 12px var(--display);
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: rgba(242, 139, 130, 0.12);
 }
 
 @media (max-width: 900px) {
@@ -827,7 +1153,12 @@ h2 {
     gap: 25px;
   }
 
-  .service-grid {
+  .service-grid,
+  .process-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .portfolio-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -905,6 +1236,8 @@ h2 {
 
   .intro,
   .services-section,
+  .process-section,
+  .faq-section,
   .manifesto {
     padding-top: 80px;
     padding-bottom: 80px;
@@ -916,7 +1249,8 @@ h2 {
     gap: 20px;
   }
 
-  .service-grid {
+  .service-grid,
+  .process-grid {
     grid-template-columns: 1fr;
   }
 
@@ -964,7 +1298,7 @@ h2 {
 
   .page-lead {
     font-size: 14px;
-    margin-bottom: 50px;
+    margin-bottom: 45px;
   }
 
   .inner-split,
@@ -979,11 +1313,14 @@ h2 {
     grid-template-columns: 1fr;
   }
 
-  .portfolio-tile {
-    height: 230px;
-  }
-
   .service-list h2 {
     font-size: 26px;
+  }
+
+  .whatsapp-float {
+    right: 14px;
+    bottom: 14px;
+    padding: 10px 14px;
+    font-size: 11px;
   }
 }
