@@ -1,5 +1,7 @@
 import { firebaseConfig, firebaseEnabled } from "./firebase-config.js";
 
+const DB_URL = (firebaseConfig.databaseURL || "").replace(/\/$/, "");
+
 const year = document.querySelector("#year");
 if (year) year.textContent = new Date().getFullYear();
 
@@ -20,6 +22,12 @@ document.addEventListener("click", (event) => {
   if (nav?.classList.contains("open") && !nav.contains(event.target) && event.target !== toggle) {
     nav.classList.remove("open");
   }
+});
+
+// Lazy-load non-critical below-the-fold images for instant mobile paint
+document.querySelectorAll(".usage-card img, .footer-logo").forEach((img) => {
+  img.loading = "lazy";
+  img.decoding = "async";
 });
 
 // 10 Official Brand Kit Circular Social Media Icons
@@ -156,10 +164,8 @@ function syncText(el, val, isHtml = false) {
 }
 
 function applySiteSettings(settings = {}) {
-  // 1. Floating WhatsApp Button
   renderFloatingWhatsapp(settings.floatingWhatsapp || {});
 
-  // 2. Sections Visibility
   const secs = settings.sections || {};
   const toggleSection = (selector, key) => {
     document.querySelectorAll(selector).forEach((el) => {
@@ -179,7 +185,6 @@ function applySiteSettings(settings = {}) {
     c.style.display = secs.defaultPortfolio === false ? "none" : "";
   });
 
-  // 3. Individual 10 Services Visibility (Homepage + Services Page + Contact Dropdown)
   const srvs = settings.services || {};
   Object.entries(SERVICE_ID_TO_NAME).forEach(([key, label]) => {
     const isHidden = srvs[key] === false;
@@ -199,7 +204,6 @@ function applySiteSettings(settings = {}) {
     }
   });
 
-  // 4. Hero & Footer Text CMS (Supports live updates & reset to default)
   const text = settings.text || {};
   syncText(
     document.querySelector(".hero-copy .eyebrow"),
@@ -220,7 +224,7 @@ function applySiteSettings(settings = {}) {
   syncText(document.querySelector(".footer-bottom span:first-child"), text.footerText || "");
 }
 
-// Instant Zero-Flicker Load from Local Cache before Firebase connects
+// Instant Zero-Millisecond Render from Local Cache
 try {
   const cached = JSON.parse(localStorage.getItem("akstar_cms_cache") || "null");
   renderSocialCircles(cached?.socials || {});
@@ -230,7 +234,7 @@ try {
   applySiteSettings({});
 }
 
-// Smooth Scroll-Reveal Animations
+// Fail-Safe Scroll-Reveal Animations
 function initScrollReveal() {
   const targets = document.querySelectorAll(
     ".intro, .section-heading, .brand-service-box, .usage-card, .process-step, .faq-item, .manifesto, .cta-band, .project-card, .value-grid article, .service-list article, .channel-card"
@@ -251,14 +255,19 @@ function initScrollReveal() {
         }
       });
     },
-    { threshold: 0.1, rootMargin: "0px 0px -25px 0px" }
+    { threshold: 0.08, rootMargin: "0px 0px -20px 0px" }
   );
 
   targets.forEach((el, index) => {
     el.classList.add("reveal");
-    el.style.transitionDelay = `${(index % 5) * 60}ms`;
+    el.style.transitionDelay = `${(index % 4) * 50}ms`;
     observer.observe(el);
   });
+
+  // Safety guarantee: make sure all sections become visible even on slow mobile browsers
+  setTimeout(() => {
+    targets.forEach((el) => el.classList.add("is-visible"));
+  }, 1200);
 }
 initScrollReveal();
 
@@ -303,16 +312,16 @@ if (serviceSelect) {
   }
 }
 
-// Contact Form Submission to Firebase Realtime Database
+// Ultra-Fast Contact Form Submission via Firebase REST API (No Heavy SDK Needed)
 const form = document.querySelector("#contactForm");
 const status = document.querySelector("#formStatus");
 
 if (form) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!firebaseEnabled) {
+    if (!firebaseEnabled || !DB_URL) {
       status.dataset.state = "error";
-      status.textContent = "Firebase is not configured yet. Add your project settings in js/firebase-config.js.";
+      status.textContent = "Firebase is not configured yet.";
       return;
     }
     const submit = form.querySelector('button[type="submit"]');
@@ -320,20 +329,21 @@ if (form) {
     status.dataset.state = "";
     status.textContent = "Sending your enquiry…";
     try {
-      const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
-      const { getDatabase, ref, push, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js");
-      const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-      const db = getDatabase(app);
       const raw = Object.fromEntries(new FormData(form).entries());
-      await push(ref(db, "publicEnquiries"), {
-        name: String(raw.name || "").trim(),
-        email: String(raw.email || "").trim(),
-        service: String(raw.service || "").trim(),
-        message: String(raw.message || "").trim(),
-        status: "new",
-        createdAt: serverTimestamp(),
-        source: "website"
+      const res = await fetch(`${DB_URL}/publicEnquiries.json`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: String(raw.name || "").trim(),
+          email: String(raw.email || "").trim(),
+          service: String(raw.service || "").trim(),
+          message: String(raw.message || "").trim(),
+          status: "new",
+          createdAt: { ".sv": "timestamp" },
+          source: "website"
+        })
       });
+      if (!res.ok) throw new Error("Failed to submit");
       form.reset();
       status.dataset.state = "success";
       status.textContent = "Thank you. Your enquiry has been sent.";
@@ -347,18 +357,24 @@ if (form) {
   });
 }
 
-// REAL-TIME LIVE SYNC FROM FIREBASE (No Page Refresh Needed!)
-if (firebaseEnabled) {
-  (async () => {
-    try {
-      const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
-      const { getDatabase, ref, onValue } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js");
-      const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-      const db = getDatabase(app);
+// Lightweight Real-Time Sync via Firebase REST API (Zero WebSocket Lag on Mobile!)
+let lastContentHash = "";
+let lastPortfolioHash = "";
 
-      // 1. Real-Time Listener for Socials, Sections, Services, Hero Text & FAQs
-      onValue(ref(db, "siteContent"), (contentSnap) => {
-        const siteContent = contentSnap.exists() ? (contentSnap.val() || {}) : {};
+async function syncRealtimeData() {
+  if (!firebaseEnabled || !DB_URL || document.hidden) return;
+  try {
+    const portfolioGrid = document.querySelector("#portfolioGrid");
+    const [contentRes, portfolioRes] = await Promise.all([
+      fetch(`${DB_URL}/siteContent.json`, { cache: "no-store" }),
+      portfolioGrid ? fetch(`${DB_URL}/portfolio.json`, { cache: "no-store" }) : Promise.resolve(null)
+    ]);
+
+    if (contentRes && contentRes.ok) {
+      const contentText = await contentRes.text();
+      if (contentText !== lastContentHash) {
+        lastContentHash = contentText;
+        const siteContent = JSON.parse(contentText) || {};
         try {
           localStorage.setItem("akstar_cms_cache", JSON.stringify({
             socials: siteContent.socials || {},
@@ -384,40 +400,47 @@ if (firebaseEnabled) {
             bindFaqEvents();
           }
         }
-      });
+      }
+    }
 
-      // 2. Real-Time Listener for Published Portfolio Projects
-      const portfolioGrid = document.querySelector("#portfolioGrid");
-      if (portfolioGrid) {
-        onValue(ref(db, "portfolio"), (snap) => {
-          portfolioGrid.querySelectorAll("[data-cms]").forEach((el) => el.remove());
-          const activeFilter = document.querySelector(".filter-btn.active")?.dataset.filter || "all";
-          if (snap.exists()) {
-            const items = Object.values(snap.val()).filter((p) => p && p.published);
-            items.forEach((item) => {
-              const card = document.createElement("article");
-              card.className = "project-card is-visible";
-              card.dataset.cms = "true";
-              card.dataset.category = item.category || "apps-web";
-              if (activeFilter !== "all" && card.dataset.category !== activeFilter) {
-                card.classList.add("hidden");
-              }
-              const safeTitle = escapeHtml(item.title || "Project");
-              const safeDivision = escapeHtml(item.division || "AK STAR GLOBAL");
-              const safeDesc = escapeHtml(item.description || "");
-              const linkHtml = item.url
-                ? `<a class="project-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">View live project ↗</a>`
-                : `<a class="project-link" href="contact.html">Request details ↗</a>`;
-              card.innerHTML = `<div><span class="project-tag">${safeDivision}</span><h3>${safeTitle}</h3><p>${safeDesc}</p></div>${linkHtml}`;
-              portfolioGrid.prepend(card);
-            });
+    if (portfolioRes && portfolioRes.ok && portfolioGrid) {
+      const portfolioText = await portfolioRes.text();
+      if (portfolioText !== lastPortfolioHash) {
+        lastPortfolioHash = portfolioText;
+        const rawPortfolio = JSON.parse(portfolioText) || {};
+        portfolioGrid.querySelectorAll("[data-cms]").forEach((el) => el.remove());
+        const activeFilter = document.querySelector(".filter-btn.active")?.dataset.filter || "all";
+        const items = Object.values(rawPortfolio).filter((p) => p && p.published);
+        items.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "project-card is-visible";
+          card.dataset.cms = "true";
+          card.dataset.category = item.category || "apps-web";
+          if (activeFilter !== "all" && card.dataset.category !== activeFilter) {
+            card.classList.add("hidden");
           }
+          const safeTitle = escapeHtml(item.title || "Project");
+          const safeDivision = escapeHtml(item.division || "AK STAR GLOBAL");
+          const safeDesc = escapeHtml(item.description || "");
+          const linkHtml = item.url
+            ? `<a class="project-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">View live project ↗</a>`
+            : `<a class="project-link" href="contact.html">Request details ↗</a>`;
+          card.innerHTML = `<div><span class="project-tag">${safeDivision}</span><h3>${safeTitle}</h3><p>${safeDesc}</p></div>${linkHtml}`;
+          portfolioGrid.prepend(card);
         });
       }
-    } catch (e) {
-      console.warn("Real-time CMS sync error:", e);
     }
-  })();
+  } catch (e) {
+    // Silent retry on temporary network drop
+  }
+}
+
+if (firebaseEnabled && DB_URL) {
+  syncRealtimeData();
+  setInterval(syncRealtimeData, 4000);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) syncRealtimeData();
+  });
 }
 
 function escapeHtml(str) {
