@@ -1,6 +1,46 @@
 import { firebaseConfig, firebaseEnabled } from "./firebase-config.js";
 
+// Yahan apna Cloudinary LOGO.png URL paste karein (jaise: "https://res.cloudinary.com/.../LOGO.png")
+const DEFAULT_LOGO_URL = "LOGO.png";
+
 const DB_URL = (firebaseConfig.databaseURL || "").replace(/\/$/, "");
+
+function optimizeCloudinaryUrl(url) {
+  const clean = String(url || "").trim();
+  if (clean.includes("res.cloudinary.com") && clean.includes("/image/upload/") && !clean.includes("f_auto")) {
+    return clean.replace("/image/upload/", "/image/upload/f_auto,q_auto/");
+  }
+  return clean;
+}
+
+function applyBrandLogo(customUrl) {
+  const rawUrl = (customUrl && String(customUrl).trim()) || DEFAULT_LOGO_URL;
+  const targetUrl = optimizeCloudinaryUrl(rawUrl);
+  if (!targetUrl) return;
+
+  document.querySelectorAll("img").forEach((img) => {
+    const srcAttr = img.getAttribute("src") || "";
+    if (img.dataset.brandLogo === "true" || srcAttr === "LOGO.png" || srcAttr.endsWith("/LOGO.png")) {
+      img.dataset.brandLogo = "true";
+      if (img.classList.contains("brand-logo")) {
+        img.fetchPriority = "high";
+        img.loading = "eager";
+      }
+      if (img.getAttribute("src") !== targetUrl) {
+        img.src = targetUrl;
+      }
+    }
+  });
+
+  document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach((link) => {
+    if (link.getAttribute("href") !== targetUrl) {
+      link.setAttribute("href", targetUrl);
+    }
+  });
+}
+
+// Run immediately before anything else loads
+applyBrandLogo();
 
 const year = document.querySelector("#year");
 if (year) year.textContent = new Date().getFullYear();
@@ -24,7 +64,7 @@ document.addEventListener("click", (event) => {
   }
 });
 
-// Lazy-load non-critical below-the-fold images for instant mobile paint
+// Lazy-load below-the-fold images for instant mobile paint
 document.querySelectorAll(".usage-card img, .footer-logo").forEach((img) => {
   img.loading = "lazy";
   img.decoding = "async";
@@ -164,8 +204,13 @@ function syncText(el, val, isHtml = false) {
 }
 
 function applySiteSettings(settings = {}) {
+  // 0. Apply Cloudinary Brand Logo if configured
+  applyBrandLogo(settings.logoUrl || "");
+
+  // 1. Floating WhatsApp Button
   renderFloatingWhatsapp(settings.floatingWhatsapp || {});
 
+  // 2. Sections Visibility
   const secs = settings.sections || {};
   const toggleSection = (selector, key) => {
     document.querySelectorAll(selector).forEach((el) => {
@@ -185,6 +230,7 @@ function applySiteSettings(settings = {}) {
     c.style.display = secs.defaultPortfolio === false ? "none" : "";
   });
 
+  // 3. Individual 10 Services Visibility
   const srvs = settings.services || {};
   Object.entries(SERVICE_ID_TO_NAME).forEach(([key, label]) => {
     const isHidden = srvs[key] === false;
@@ -204,6 +250,7 @@ function applySiteSettings(settings = {}) {
     }
   });
 
+  // 4. Hero & Footer Text CMS
   const text = settings.text || {};
   syncText(
     document.querySelector(".hero-copy .eyebrow"),
@@ -264,7 +311,6 @@ function initScrollReveal() {
     observer.observe(el);
   });
 
-  // Safety guarantee: make sure all sections become visible even on slow mobile browsers
   setTimeout(() => {
     targets.forEach((el) => el.classList.add("is-visible"));
   }, 1200);
@@ -312,7 +358,7 @@ if (serviceSelect) {
   }
 }
 
-// Ultra-Fast Contact Form Submission via Firebase REST API (No Heavy SDK Needed)
+// Ultra-Fast Contact Form Submission via Firebase REST API
 const form = document.querySelector("#contactForm");
 const status = document.querySelector("#formStatus");
 
@@ -357,7 +403,7 @@ if (form) {
   });
 }
 
-// Lightweight Real-Time Sync via Firebase REST API (Zero WebSocket Lag on Mobile!)
+// Lightweight Real-Time Sync via Firebase REST API
 let lastContentHash = "";
 let lastPortfolioHash = "";
 
@@ -431,7 +477,7 @@ async function syncRealtimeData() {
       }
     }
   } catch (e) {
-    // Silent retry on temporary network drop
+    // Silent retry
   }
 }
 
