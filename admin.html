@@ -14,7 +14,7 @@
 <body data-admin="true">
 <header class="site-header">
   <a class="brand" href="index.html" aria-label="AK STAR GLOBAL home">
-    <img src="LOGO.png" alt="AK STAR GLOBAL" class="brand-logo">
+    <img src="LOGO.png" alt="AK STAR GLOBAL" class="brand-logo" id="adminHeaderLogo">
   </a>
   <div style="display:flex;gap:14px;align-items:center;">
     <a class="text-link" href="index.html" target="_blank">Live Website ↗</a>
@@ -29,7 +29,7 @@
     <p style="color:var(--muted);font-size:13px;margin-bottom:22px;">Sign in with your authorized Firebase admin email and password.</p>
     <form id="loginForm" class="contact-form">
       <label>Admin Email
-        <input type="email" name="email" required placeholder="admin@akstarglobal.com">
+        <input type="email" name="email" required placeholder="akstarmods@gmail.com">
       </label>
       <label>Password
         <input type="password" name="password" required placeholder="Enter password">
@@ -42,13 +42,13 @@
   <div id="dashboardSection" style="display:none;">
     <div class="eyebrow"><i></i> MASTER CONTROL CENTER</div>
     <h1 style="font-size:clamp(32px,4.5vw,52px);">AK STAR GLOBAL <em>Admin.</em></h1>
-    <p class="page-lead" style="margin-bottom:30px;">Control everything shown on your live website — social icons, sections, services, text, portfolio, FAQs and enquiries.</p>
+    <p class="page-lead" style="margin-bottom:30px;">Control everything shown on your live website — Cloudinary fast logo, social icons, sections, services, text, portfolio, FAQs and enquiries.</p>
 
     <div class="admin-tabs">
       <button class="filter-btn active" type="button" data-tab="enquiriesTab">Enquiries (<span id="enquiryCount">0</span>)</button>
       <button class="filter-btn" type="button" data-tab="socialsTab">Social Icons &amp; WhatsApp</button>
       <button class="filter-btn" type="button" data-tab="visibilityTab">Sections &amp; Services</button>
-      <button class="filter-btn" type="button" data-tab="contentTab">Hero &amp; Text CMS</button>
+      <button class="filter-btn" type="button" data-tab="contentTab">Logo &amp; Text CMS</button>
       <button class="filter-btn" type="button" data-tab="portfolioTab">Portfolio (<span id="portfolioCount">0</span>)</button>
       <button class="filter-btn" type="button" data-tab="faqTab">FAQs (<span id="faqCount">0</span>)</button>
     </div>
@@ -122,12 +122,35 @@
       </form>
     </section>
 
-    <!-- TAB 4: Hero & Website Text CMS -->
+    <!-- TAB 4: Cloudinary Logo & Website Text CMS -->
     <section id="contentTab" class="admin-tab-panel" style="display:none;">
-      <form id="contentForm" class="contact-form" style="max-width:780px;background:var(--panel);padding:28px;border:1px solid var(--line);">
-        <h3 style="margin:0 0 4px;font-family:var(--display);">Homepage &amp; Footer Text Control</h3>
-        <p style="color:var(--muted);font-size:12px;margin:0 0 12px;">Khali chhodne par default brand text dikhega.</p>
+      <div style="max-width:780px;background:var(--panel);padding:28px;border:1px solid var(--line);margin-bottom:28px;">
+        <h3 style="margin:0 0 4px;font-family:var(--display);">Cloudinary Fast Logo Setup</h3>
+        <p style="color:var(--muted);font-size:12px;margin:0 0 16px;">Cloudinary se aapka exact LOGO.png bina design badle 0.1 second mein fast load hoga.</p>
 
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <label style="font-size:12px;color:#D2CFC6;display:grid;gap:6px;">Cloudinary Cloud Name
+            <input type="text" id="cldCloudName" placeholder="e.g. dxyz123abc" style="background:var(--bg);border:1px solid #35373F;padding:12px;color:var(--text);">
+          </label>
+          <label style="font-size:12px;color:#D2CFC6;display:grid;gap:6px;">Unsigned Upload Preset
+            <input type="text" id="cldUploadPreset" placeholder="e.g. akstar_preset" style="background:var(--bg);border:1px solid #35373F;padding:12px;color:var(--text);">
+          </label>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <input type="file" id="cldLogoFile" accept="image/*" style="color:var(--muted);font-size:12px;">
+          <button type="button" class="btn btn-gold" id="cldUploadBtn" style="padding:11px 18px;">Upload LOGO.png to Cloudinary ↗</button>
+        </div>
+        <p id="cldStatus" class="form-status" style="margin-top:10px;"></p>
+      </div>
+
+      <form id="contentForm" class="contact-form" style="max-width:780px;background:var(--panel);padding:28px;border:1px solid var(--line);">
+        <h3 style="margin:0 0 4px;font-family:var(--display);">Logo URL &amp; Website Text Control</h3>
+        <p style="color:var(--muted);font-size:12px;margin:0 0 12px;">Direct Cloudinary URL paste karke bhi save kar sakte hain.</p>
+
+        <label>Brand Logo URL (Cloudinary Link)
+          <input type="url" name="logoUrl" id="logoUrlInput" placeholder="https://res.cloudinary.com/.../LOGO.png">
+        </label>
         <label>Top Eyebrow Tagline
           <input type="text" name="eyebrow" placeholder="CREATIVE MEDIA · DIGITAL · TECHNOLOGY">
         </label>
@@ -147,7 +170,7 @@
         </label>
 
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <button class="btn btn-gold" type="submit">Save Website Text ↗</button>
+          <button class="btn btn-gold" type="submit">Save Logo &amp; Text ↗</button>
           <button class="btn btn-outline" type="button" id="resetTextBtn">Reset Default Text</button>
         </div>
         <p id="contentStatus" class="form-status"></p>
@@ -204,6 +227,22 @@
 <script type="module">
   import { firebaseConfig, firebaseEnabled } from "./js/firebase-config.js";
 
+  function optimizeCloudinaryUrl(url) {
+    const clean = String(url || "").trim();
+    if (clean.includes("res.cloudinary.com") && clean.includes("/image/upload/") && !clean.includes("f_auto")) {
+      return clean.replace("/image/upload/", "/image/upload/f_auto,q_auto/");
+    }
+    return clean;
+  }
+
+  // Apply cached Cloudinary logo on admin header immediately
+  try {
+    const cached = JSON.parse(localStorage.getItem("akstar_cms_cache") || "null");
+    if (cached?.settings?.logoUrl) {
+      document.querySelector("#adminHeaderLogo").src = optimizeCloudinaryUrl(cached.settings.logoUrl);
+    }
+  } catch {}
+
   const SOCIAL_LIST = [
     { key: "youtube", name: "YouTube", defaultUrl: "https://www.youtube.com" },
     { key: "instagram", name: "Instagram", defaultUrl: "https://www.instagram.com" },
@@ -242,9 +281,7 @@
     { key: "business", name: "Business Services" }
   ];
 
-  // Build dynamic control rows
-  const socialControlsContainer = document.querySelector("#socialControlsContainer");
-  socialControlsContainer.innerHTML = SOCIAL_LIST.map((s) => `
+  document.querySelector("#socialControlsContainer").innerHTML = SOCIAL_LIST.map((s) => `
     <div class="social-control-item">
       <div class="toggle-row">
         <strong>${s.name}</strong>
@@ -280,7 +317,6 @@
     </div>
   `).join("");
 
-  // Quick helper buttons for Social Icons
   document.querySelector("#onlyInstaBtn").addEventListener("click", () => {
     SOCIAL_LIST.forEach((s) => {
       const cb = document.querySelector(`[data-soc-enabled="${s.key}"]`);
@@ -295,7 +331,6 @@
     });
   });
 
-  // Tab switching
   document.querySelectorAll("[data-tab]").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll("[data-tab]").forEach((b) => b.classList.remove("active"));
@@ -305,6 +340,12 @@
       });
     });
   });
+
+  // Restore saved Cloudinary credentials locally
+  const cldCloudInput = document.querySelector("#cldCloudName");
+  const cldPresetInput = document.querySelector("#cldUploadPreset");
+  cldCloudInput.value = localStorage.getItem("akstar_cld_cloud") || "";
+  cldPresetInput.value = localStorage.getItem("akstar_cld_preset") || "";
 
   const authSection = document.querySelector("#authSection");
   const dashboardSection = document.querySelector("#dashboardSection");
@@ -419,27 +460,29 @@
     onValue(ref(db, "siteContent/settings"), (snap) => {
       const settings = snap.val() || {};
 
-      // Floating WhatsApp
+      if (settings.logoUrl) {
+        const optUrl = optimizeCloudinaryUrl(settings.logoUrl);
+        document.querySelector("#logoUrlInput").value = optUrl;
+        document.querySelector("#adminHeaderLogo").src = optUrl;
+      }
+
       const wa = settings.floatingWhatsapp || {};
       document.querySelector("#waFloatEnabled").checked = wa.enabled !== false;
       if (wa.label) document.querySelector("#waFloatLabel").value = wa.label;
       if (wa.url) document.querySelector("#waFloatUrl").value = wa.url;
 
-      // Sections Visibility
       const secs = settings.sections || {};
       SECTIONS_LIST.forEach((sec) => {
         const cb = document.querySelector(`[data-sec-enabled="${sec.key}"]`);
         if (cb) cb.checked = secs[sec.key] !== false;
       });
 
-      // Services Visibility
       const srvs = settings.services || {};
       SERVICES_LIST.forEach((srv) => {
         const cb = document.querySelector(`[data-srv-enabled="${srv.key}"]`);
         if (cb) cb.checked = srvs[srv.key] !== false;
       });
 
-      // Hero & Text CMS
       const text = settings.text || {};
       const contentForm = document.querySelector("#contentForm");
       if (text.eyebrow) contentForm.elements.eyebrow.value = text.eyebrow;
@@ -490,12 +533,66 @@
       st.textContent = "Website sections aur services visibility live update ho gayi!";
     };
 
-    // 4. Save Hero & Text CMS
+    // 4. Direct Cloudinary Logo Uploader
+    document.querySelector("#cldUploadBtn").addEventListener("click", async () => {
+      const cldStatus = document.querySelector("#cldStatus");
+      const cloudName = cldCloudInput.value.trim();
+      const preset = cldPresetInput.value.trim();
+      const fileInput = document.querySelector("#cldLogoFile");
+
+      if (!cloudName || !preset) {
+        cldStatus.dataset.state = "error";
+        cldStatus.textContent = "Pehle Cloudinary Cloud Name aur Unsigned Upload Preset dalein.";
+        return;
+      }
+      if (!fileInput.files || !fileInput.files[0]) {
+        cldStatus.dataset.state = "error";
+        cldStatus.textContent = "Pehle apni LOGO.png file select karein.";
+        return;
+      }
+
+      localStorage.setItem("akstar_cld_cloud", cloudName);
+      localStorage.setItem("akstar_cld_preset", preset);
+
+      const btn = document.querySelector("#cldUploadBtn");
+      btn.disabled = true;
+      cldStatus.dataset.state = "";
+      cldStatus.textContent = "Uploading LOGO.png to Cloudinary…";
+
+      try {
+        const fd = new FormData();
+        fd.append("file", fileInput.files[0]);
+        fd.append("upload_preset", preset);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+          method: "POST",
+          body: fd
+        });
+        const data = await res.json();
+        if (!res.ok || !data.secure_url) throw new Error(data.error?.message || "Upload failed");
+
+        const fastUrl = optimizeCloudinaryUrl(data.secure_url);
+        document.querySelector("#logoUrlInput").value = fastUrl;
+        document.querySelector("#adminHeaderLogo").src = fastUrl;
+        await update(ref(db, "siteContent/settings"), { logoUrl: fastUrl });
+
+        cldStatus.dataset.state = "success";
+        cldStatus.textContent = "Cloudinary par upload ho gaya aur website par live set ho gaya!";
+      } catch (err) {
+        cldStatus.dataset.state = "error";
+        cldStatus.textContent = "Cloudinary upload error: " + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // Save Logo URL & Hero Text CMS
     document.querySelector("#contentForm").onsubmit = async (e) => {
       e.preventDefault();
       const st = document.querySelector("#contentStatus");
       const raw = Object.fromEntries(new FormData(e.target).entries());
+      const fastLogoUrl = optimizeCloudinaryUrl(raw.logoUrl || "");
       await update(ref(db, "siteContent/settings"), {
+        logoUrl: fastLogoUrl,
         text: {
           eyebrow: raw.eyebrow.trim(),
           heroLead: raw.heroLead.trim(),
@@ -505,12 +602,14 @@
         }
       });
       st.dataset.state = "success";
-      st.textContent = "Website text live update ho gaya!";
+      st.textContent = "Cloudinary Logo aur Website Text live update ho gaya!";
     };
 
     document.querySelector("#resetTextBtn").addEventListener("click", async () => {
       const contentForm = document.querySelector("#contentForm");
+      const currentLogo = contentForm.elements.logoUrl.value;
       contentForm.reset();
+      contentForm.elements.logoUrl.value = currentLogo;
       await update(ref(db, "siteContent/settings"), { text: {} });
       const st = document.querySelector("#contentStatus");
       st.dataset.state = "success";
