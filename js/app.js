@@ -34,6 +34,38 @@ if (!document.body.dataset.admin) {
   document.body.appendChild(waBtn);
 }
 
+// Smooth Scroll-Reveal Animations
+function initScrollReveal() {
+  const targets = document.querySelectorAll(
+    ".intro, .section-heading, .service-card, .process-step, .faq-item, .manifesto, .cta-band, .project-card, .value-grid article, .service-list article, .channel-card"
+  );
+  if (!targets.length) return;
+
+  if (!("IntersectionObserver" in window)) {
+    targets.forEach((el) => el.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -30px 0px" }
+  );
+
+  targets.forEach((el, index) => {
+    el.classList.add("reveal");
+    el.style.transitionDelay = `${(index % 4) * 70}ms`;
+    observer.observe(el);
+  });
+}
+initScrollReveal();
+
 // FAQ Accordion
 function bindFaqEvents() {
   document.querySelectorAll(".faq-question").forEach((btn) => {
@@ -119,7 +151,7 @@ if (form) {
   });
 }
 
-// Optional Live CMS Sync from Firebase (Published Portfolio & FAQs)
+// Live CMS Sync from Firebase (Published Portfolio & FAQs)
 if (firebaseEnabled) {
   (async () => {
     try {
@@ -135,7 +167,7 @@ if (firebaseEnabled) {
           const items = Object.values(snap.val()).filter((p) => p && p.published);
           items.forEach((item) => {
             const card = document.createElement("article");
-            card.className = "project-card";
+            card.className = "project-card is-visible";
             card.dataset.category = item.category || "apps-web";
             const safeTitle = escapeHtml(item.title || "Project");
             const safeDivision = escapeHtml(item.division || "AK STAR GLOBAL");
@@ -156,7 +188,7 @@ if (firebaseEnabled) {
           Object.values(faqSnap.val()).forEach((faq) => {
             if (!faq || !faq.question || !faq.answer) return;
             const item = document.createElement("div");
-            item.className = "faq-item";
+            item.className = "faq-item is-visible";
             item.innerHTML = `<button class="faq-question" type="button"><span>${escapeHtml(faq.question)}</span><span class="faq-icon">+</span></button><div class="faq-answer">${escapeHtml(faq.answer)}</div>`;
             faqList.appendChild(item);
           });
