@@ -141,6 +141,20 @@ function renderFloatingWhatsapp(waCfg = {}) {
   waBtn.innerHTML = `<span class="whatsapp-dot"></span> ${escapeHtml(waCfg.label || "WhatsApp Channel ↗")}`;
 }
 
+function syncText(el, val, isHtml = false) {
+  if (!el) return;
+  if (el.dataset.orig === undefined) {
+    el.dataset.orig = isHtml ? el.innerHTML : el.textContent;
+  }
+  if (val) {
+    if (isHtml) el.innerHTML = val;
+    else el.textContent = val;
+  } else {
+    if (isHtml) el.innerHTML = el.dataset.orig;
+    else el.textContent = el.dataset.orig;
+  }
+}
+
 function applySiteSettings(settings = {}) {
   // 1. Floating WhatsApp Button
   renderFloatingWhatsapp(settings.floatingWhatsapp || {});
@@ -161,24 +175,19 @@ function applySiteSettings(settings = {}) {
   toggleSection(".manifesto", "manifesto");
   toggleSection(".cta-wrap", "cta");
 
-  if (secs.defaultPortfolio === false) {
-    document.querySelectorAll("#portfolioGrid .project-card:not([data-cms])").forEach((c) => {
-      c.style.display = "none";
-    });
-  }
+  document.querySelectorAll("#portfolioGrid .project-card:not([data-cms])").forEach((c) => {
+    c.style.display = secs.defaultPortfolio === false ? "none" : "";
+  });
 
   // 3. Individual 10 Services Visibility (Homepage + Services Page + Contact Dropdown)
   const srvs = settings.services || {};
   Object.entries(SERVICE_ID_TO_NAME).forEach(([key, label]) => {
     const isHidden = srvs[key] === false;
-    // Homepage cards
     document.querySelectorAll(`a.brand-service-box[href$="#${key}"]`).forEach((card) => {
       card.style.display = isHidden ? "none" : "";
     });
-    // Services page articles
     const article = document.getElementById(key);
     if (article) article.style.display = isHidden ? "none" : "";
-    // Contact dropdown option
     const select = document.querySelector('select[name="service"]');
     if (select) {
       Array.from(select.options).forEach((opt) => {
@@ -190,31 +199,28 @@ function applySiteSettings(settings = {}) {
     }
   });
 
-  // 4. Hero & Footer Text CMS
+  // 4. Hero & Footer Text CMS (Supports live updates & reset to default)
   const text = settings.text || {};
-  if (text.eyebrow) {
-    const eb = document.querySelector(".hero-copy .eyebrow");
-    if (eb) eb.innerHTML = `<i></i> ${escapeHtml(text.eyebrow)}`;
+  syncText(
+    document.querySelector(".hero-copy .eyebrow"),
+    text.eyebrow ? `<i></i> ${escapeHtml(text.eyebrow)}` : "",
+    true
+  );
+  syncText(document.querySelector(".hero-copy .hero-lead"), text.heroLead || "");
+
+  const primaryBtn = document.querySelector(".hero-actions .btn-gold");
+  if (primaryBtn) {
+    syncText(primaryBtn, text.primaryBtnText || "");
+    if (primaryBtn.dataset.origHref === undefined) {
+      primaryBtn.dataset.origHref = primaryBtn.getAttribute("href") || "services.html";
+    }
+    primaryBtn.setAttribute("href", text.primaryBtnLink || primaryBtn.dataset.origHref);
   }
-  if (text.heroLead) {
-    const lead = document.querySelector(".hero-copy .hero-lead");
-    if (lead) lead.textContent = text.heroLead;
-  }
-  if (text.primaryBtnText) {
-    const btn = document.querySelector(".hero-actions .btn-gold");
-    if (btn) btn.textContent = text.primaryBtnText;
-  }
-  if (text.primaryBtnLink) {
-    const btn = document.querySelector(".hero-actions .btn-gold");
-    if (btn) btn.setAttribute("href", text.primaryBtnLink);
-  }
-  if (text.footerText) {
-    const ft = document.querySelector(".footer-bottom span:first-child");
-    if (ft) ft.textContent = text.footerText;
-  }
+
+  syncText(document.querySelector(".footer-bottom span:first-child"), text.footerText || "");
 }
 
-// Instant Zero-Flicker Load from Local Cache before Firebase responds
+// Instant Zero-Flicker Load from Local Cache before Firebase connects
 try {
   const cached = JSON.parse(localStorage.getItem("akstar_cms_cache") || "null");
   renderSocialCircles(cached?.socials || {});
@@ -341,61 +347,75 @@ if (form) {
   });
 }
 
-// Live CMS Sync from Firebase (Socials, Settings, Published Portfolio & FAQs)
+// REAL-TIME LIVE SYNC FROM FIREBASE (No Page Refresh Needed!)
 if (firebaseEnabled) {
   (async () => {
     try {
       const { initializeApp, getApps, getApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
-      const { getDatabase, ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js");
+      const { getDatabase, ref, onValue } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js");
       const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
       const db = getDatabase(app);
 
-      const contentSnap = await get(ref(db, "siteContent"));
-      if (contentSnap.exists()) {
-        const siteContent = contentSnap.val() || {};
-        localStorage.setItem("akstar_cms_cache", JSON.stringify({
-          socials: siteContent.socials || {},
-          settings: siteContent.settings || {}
-        }));
+      // 1. Real-Time Listener for Socials, Sections, Services, Hero Text & FAQs
+      onValue(ref(db, "siteContent"), (contentSnap) => {
+        const siteContent = contentSnap.exists() ? (contentSnap.val() || {}) : {};
+        try {
+          localStorage.setItem("akstar_cms_cache", JSON.stringify({
+            socials: siteContent.socials || {},
+            settings: siteContent.settings || {}
+          }));
+        } catch {}
+
         renderSocialCircles(siteContent.socials || {});
         applySiteSettings(siteContent.settings || {});
 
         const faqList = document.querySelector("#faqList");
-        if (faqList && siteContent.faqs) {
-          Object.values(siteContent.faqs).forEach((faq) => {
-            if (!faq || !faq.question || !faq.answer) return;
-            const item = document.createElement("div");
-            item.className = "faq-item is-visible";
-            item.innerHTML = `<button class="faq-question" type="button"><span>${escapeHtml(faq.question)}</span><span class="faq-icon">+</span></button><div class="faq-answer">${escapeHtml(faq.answer)}</div>`;
-            faqList.appendChild(item);
-          });
-          bindFaqEvents();
+        if (faqList) {
+          faqList.querySelectorAll("[data-cms-faq]").forEach((el) => el.remove());
+          if (siteContent.faqs) {
+            Object.values(siteContent.faqs).forEach((faq) => {
+              if (!faq || !faq.question || !faq.answer) return;
+              const item = document.createElement("div");
+              item.className = "faq-item is-visible";
+              item.dataset.cmsFaq = "true";
+              item.innerHTML = `<button class="faq-question" type="button"><span>${escapeHtml(faq.question)}</span><span class="faq-icon">+</span></button><div class="faq-answer">${escapeHtml(faq.answer)}</div>`;
+              faqList.appendChild(item);
+            });
+            bindFaqEvents();
+          }
         }
-      }
+      });
 
+      // 2. Real-Time Listener for Published Portfolio Projects
       const portfolioGrid = document.querySelector("#portfolioGrid");
       if (portfolioGrid) {
-        const snap = await get(ref(db, "portfolio"));
-        if (snap.exists()) {
-          const items = Object.values(snap.val()).filter((p) => p && p.published);
-          items.forEach((item) => {
-            const card = document.createElement("article");
-            card.className = "project-card is-visible";
-            card.dataset.cms = "true";
-            card.dataset.category = item.category || "apps-web";
-            const safeTitle = escapeHtml(item.title || "Project");
-            const safeDivision = escapeHtml(item.division || "AK STAR GLOBAL");
-            const safeDesc = escapeHtml(item.description || "");
-            const linkHtml = item.url
-              ? `<a class="project-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">View live project ↗</a>`
-              : `<a class="project-link" href="contact.html">Request details ↗</a>`;
-            card.innerHTML = `<div><span class="project-tag">${safeDivision}</span><h3>${safeTitle}</h3><p>${safeDesc}</p></div>${linkHtml}`;
-            portfolioGrid.prepend(card);
-          });
-        }
+        onValue(ref(db, "portfolio"), (snap) => {
+          portfolioGrid.querySelectorAll("[data-cms]").forEach((el) => el.remove());
+          const activeFilter = document.querySelector(".filter-btn.active")?.dataset.filter || "all";
+          if (snap.exists()) {
+            const items = Object.values(snap.val()).filter((p) => p && p.published);
+            items.forEach((item) => {
+              const card = document.createElement("article");
+              card.className = "project-card is-visible";
+              card.dataset.cms = "true";
+              card.dataset.category = item.category || "apps-web";
+              if (activeFilter !== "all" && card.dataset.category !== activeFilter) {
+                card.classList.add("hidden");
+              }
+              const safeTitle = escapeHtml(item.title || "Project");
+              const safeDivision = escapeHtml(item.division || "AK STAR GLOBAL");
+              const safeDesc = escapeHtml(item.description || "");
+              const linkHtml = item.url
+                ? `<a class="project-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">View live project ↗</a>`
+                : `<a class="project-link" href="contact.html">Request details ↗</a>`;
+              card.innerHTML = `<div><span class="project-tag">${safeDivision}</span><h3>${safeTitle}</h3><p>${safeDesc}</p></div>${linkHtml}`;
+              portfolioGrid.prepend(card);
+            });
+          }
+        });
       }
     } catch (e) {
-      console.warn("CMS sync skipped:", e);
+      console.warn("Real-time CMS sync error:", e);
     }
   })();
 }
