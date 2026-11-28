@@ -25,6 +25,7 @@ body {
   color: var(--text);
   font-family: var(--font);
   line-height: 1.65;
+  overflow-x: hidden;
 }
 
 a {
@@ -41,7 +42,7 @@ a {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
-  background: rgba(16, 17, 20, 0.94);
+  background: rgba(16, 17, 20, 0.92);
   backdrop-filter: blur(16px);
   z-index: 50;
 }
@@ -78,7 +79,7 @@ nav a {
   font-size: 13px;
   font-weight: 500;
   color: #D2CFC6;
-  transition: 0.2s;
+  transition: color 0.25s ease;
 }
 
 nav a:hover,
@@ -91,10 +92,13 @@ nav .nav-cta {
   padding: 10px 18px;
   color: var(--gold2);
   font-weight: 600;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
 
 nav .nav-cta:hover {
-  background: rgba(216, 180, 90, 0.1);
+  background: rgba(216, 180, 90, 0.12);
+  border-color: var(--gold);
+  transform: translateY(-1px);
 }
 
 .menu-toggle {
@@ -112,6 +116,7 @@ nav .nav-cta:hover {
   padding-right: 10vw;
 }
 
+/* Hero Section & Entrance Animations */
 .hero {
   min-height: 690px;
   display: grid;
@@ -121,6 +126,26 @@ nav .nav-cta:hover {
   overflow: hidden;
   padding-top: 70px;
   padding-bottom: 95px;
+}
+
+.hero-copy .eyebrow {
+  animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+
+.hero-copy h1 {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.hero-copy .hero-lead {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+}
+
+.hero-copy .hero-actions {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+.hero-copy .hero-proof {
+  animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
 }
 
 .eyebrow,
@@ -199,7 +224,9 @@ h2 em,
   letter-spacing: 0.3px;
   border: 0;
   cursor: pointer;
-  transition: 0.2s;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease;
 }
 
 .btn-gold {
@@ -207,9 +234,26 @@ h2 em,
   color: #101114;
 }
 
+.btn-gold::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-22deg);
+  transition: left 0.65s ease;
+}
+
+.btn-gold:hover::after {
+  left: 140%;
+}
+
 .btn-gold:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.06);
   transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(216, 180, 90, 0.24);
 }
 
 .btn-outline {
@@ -233,6 +277,12 @@ h2 em,
   font-size: 13px;
   font-weight: 500;
   color: var(--gold2);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.text-link:hover,
+.under-link:hover {
+  color: var(--gold);
 }
 
 .hero-proof {
@@ -258,36 +308,55 @@ h2 em,
   line-height: 1.45;
 }
 
+/* AK GLOBAL Orbital Gyroscope Animation */
 .hero-art {
   height: 470px;
   position: relative;
   display: grid;
   place-items: center;
+  animation: heroFadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.hero-art::before {
+  content: "";
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 180, 90, 0.18), rgba(216, 180, 90, 0.03) 52%, transparent 72%);
+  animation: ambientAura 5.5s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .orbit {
   position: absolute;
-  border: 1px solid rgba(216, 180, 90, 0.32);
+  border: 1px solid rgba(216, 180, 90, 0.38);
   border-radius: 50%;
-  transform: rotate(-28deg);
+  will-change: transform;
+  pointer-events: none;
 }
 
 .orbit-one {
   width: 420px;
   height: 190px;
+  box-shadow: 0 0 22px rgba(216, 180, 90, 0.08);
+  animation: orbitSpinOne 18s linear infinite;
 }
 
 .orbit-two {
   width: 490px;
   height: 260px;
-  transform: rotate(37deg);
+  border-color: rgba(240, 213, 138, 0.28);
+  animation: orbitSpinTwo 24s linear infinite;
 }
 
 .orbit-three {
   width: 340px;
   height: 340px;
   border-style: dashed;
-  opacity: 0.5;
+  border-color: rgba(216, 180, 90, 0.45);
+  opacity: 0.65;
+  animation: orbitSpinThree 32s linear infinite;
 }
 
 .core {
@@ -299,15 +368,18 @@ h2 em,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 80px rgba(216, 180, 90, 0.14), inset 0 0 35px rgba(216, 180, 90, 0.08);
-  background: radial-gradient(circle, #282216, #101114 72%);
-  z-index: 1;
+  background: radial-gradient(circle, #2C2517, #101114 72%);
+  z-index: 2;
+  animation: corePulse 4.5s ease-in-out infinite;
 }
 
 .core b {
   font: 800 56px var(--display);
   letter-spacing: -4px;
   line-height: 1;
+  background: linear-gradient(180deg, #FFFFFF 25%, #F0D58A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .core small {
@@ -315,32 +387,42 @@ h2 em,
   letter-spacing: 5px;
   font-size: 9px;
   font-weight: 600;
-  margin-top: 4px;
+  margin-top: 5px;
 }
 
 .core-star {
-  color: var(--gold);
+  color: var(--gold2);
   font-size: 16px;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  display: inline-block;
+  animation: starTwinkle 3.5s ease-in-out infinite;
 }
 
 .orbit-dot {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 9px;
   height: 9px;
+  margin: -4.5px 0 0 -4.5px;
   background: var(--gold2);
   border-radius: 50%;
-  box-shadow: 0 0 16px var(--gold);
+  box-shadow: 0 0 14px 3px rgba(240, 213, 138, 0.75);
+  will-change: transform;
+  pointer-events: none;
+  z-index: 3;
 }
 
 .dot-a {
-  top: 92px;
-  right: 80px;
+  animation: particleOrbitA 12s linear infinite;
 }
 
 .dot-b {
-  bottom: 91px;
-  left: 76px;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--gold);
+  animation: particleOrbitB 16s linear infinite;
 }
 
 .art-caption {
@@ -366,6 +448,18 @@ h2 em,
   color: #848179;
   font-size: 9px;
   letter-spacing: 2px;
+}
+
+/* Scroll Reveal Utility */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .intro {
@@ -426,13 +520,32 @@ h2 {
   position: relative;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  transition: 0.25s;
+  transition: background 0.3s ease, transform 0.3s ease;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), transparent);
+}
+
+.service-card::before,
+.process-step::before,
+.project-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  transition: width 0.35s ease;
+}
+
+.service-card:hover::before,
+.process-step:hover::before,
+.project-card:hover::before {
+  width: 100%;
 }
 
 .service-card:hover {
   background: #222019;
-  transform: translateY(-3px);
+  transform: translateY(-4px);
 }
 
 .card-no {
@@ -449,6 +562,11 @@ h2 {
   color: var(--gold);
   font-size: 26px;
   margin: 16px 0 20px;
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-icon {
+  transform: scale(1.12);
 }
 
 .service-card h3 {
@@ -468,6 +586,11 @@ h2 {
   bottom: 24px;
   right: 26px;
   color: var(--gold);
+  transition: transform 0.25s ease;
+}
+
+.service-card:hover .card-arrow {
+  transform: translate(3px, -3px);
 }
 
 /* Process Section */
@@ -485,9 +608,16 @@ h2 {
 }
 
 .process-step {
+  position: relative;
   background: var(--panel);
   border: 1px solid var(--line);
   padding: 28px 24px;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.process-step:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
 }
 
 .process-step span {
@@ -529,6 +659,12 @@ h2 {
 .faq-item {
   background: var(--bg);
   border: 1px solid var(--line);
+  transition: border-color 0.25s ease;
+}
+
+.faq-item.open,
+.faq-item:hover {
+  border-color: var(--gold);
 }
 
 .faq-question {
@@ -554,7 +690,7 @@ h2 {
   color: var(--gold);
   font-size: 20px;
   line-height: 1;
-  transition: transform 0.2s;
+  transition: transform 0.25s ease;
 }
 
 .faq-item.open .faq-icon {
@@ -652,12 +788,13 @@ h2 {
   letter-spacing: 0.6px;
   color: var(--gold2);
   background: rgba(26, 28, 33, 0.6);
-  transition: 0.2s;
+  transition: 0.25s;
 }
 
 .social-pill:hover {
   background: var(--gold);
   color: #101114;
+  transform: translateY(-2px);
 }
 
 .footer-bottom {
@@ -724,6 +861,11 @@ h2 {
   border-top: 1px solid var(--line);
   padding: 24px 12px;
   background: rgba(26, 28, 33, 0.45);
+  transition: transform 0.25s ease;
+}
+
+.value-grid article:hover {
+  transform: translateY(-3px);
 }
 
 .value-grid b,
@@ -812,6 +954,7 @@ h2 {
 }
 
 .project-card {
+  position: relative;
   background: var(--panel);
   border: 1px solid var(--line);
   padding: 28px;
@@ -819,7 +962,7 @@ h2 {
   flex-direction: column;
   justify-content: space-between;
   min-height: 290px;
-  transition: 0.25s;
+  transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
 .project-card:hover {
@@ -886,12 +1029,13 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: 0.2s;
+  transition: 0.25s;
 }
 
 .channel-card:hover {
   border-color: var(--gold);
   background: #222019;
+  transform: translateX(4px);
 }
 
 .channel-card strong {
@@ -935,6 +1079,7 @@ h2 {
   font: 14px var(--font);
   outline: none;
   border-radius: 0;
+  transition: border-color 0.2s ease;
 }
 
 .contact-form input:focus,
@@ -1001,7 +1146,7 @@ h2 {
   font: 700 12px var(--display);
   letter-spacing: 0.4px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
-  transition: 0.2s;
+  transition: 0.25s;
 }
 
 .whatsapp-float:hover {
@@ -1016,6 +1161,7 @@ h2 {
   border-radius: 50%;
   background: #25D366;
   display: inline-block;
+  animation: dotPulse 2.2s infinite;
 }
 
 /* Admin Panel Styles */
@@ -1097,6 +1243,127 @@ h2 {
   background: rgba(242, 139, 130, 0.12);
 }
 
+/* Keyframes */
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes orbitSpinOne {
+  0% {
+    transform: rotate(-28deg) scale(1);
+  }
+  50% {
+    transform: rotate(152deg) scale(1.03);
+  }
+  100% {
+    transform: rotate(332deg) scale(1);
+  }
+}
+
+@keyframes orbitSpinTwo {
+  0% {
+    transform: rotate(37deg) scale(1);
+  }
+  50% {
+    transform: rotate(-143deg) scale(0.97);
+  }
+  100% {
+    transform: rotate(-323deg) scale(1);
+  }
+}
+
+@keyframes orbitSpinThree {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes corePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 65px rgba(216, 180, 90, 0.16), inset 0 0 30px rgba(216, 180, 90, 0.08);
+  }
+  50% {
+    transform: scale(1.035);
+    box-shadow: 0 0 95px rgba(216, 180, 90, 0.32), inset 0 0 42px rgba(216, 180, 90, 0.16);
+  }
+}
+
+@keyframes ambientAura {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.25) rotate(90deg);
+    opacity: 1;
+  }
+}
+
+@keyframes particleOrbitA {
+  from {
+    transform: rotate(0deg) translateX(170px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(170px) rotate(-360deg);
+  }
+}
+
+@keyframes particleOrbitB {
+  from {
+    transform: rotate(180deg) translateX(205px) rotate(-180deg);
+  }
+  to {
+    transform: rotate(-180deg) translateX(205px) rotate(180deg);
+  }
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(37, 211, 102, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-one,
+  .orbit-two,
+  .orbit-three,
+  .core,
+  .core-star,
+  .orbit-dot,
+  .hero-art::before {
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (max-width: 900px) {
   .site-header {
     padding: 0 6vw;
@@ -1148,16 +1415,16 @@ h2 {
     right: 7vw;
   }
 
-  .intro {
+  .intro,
+  .inner-split,
+  .contact-layout,
+  .value-grid {
     grid-template-columns: 1fr;
-    gap: 25px;
+    gap: 28px;
   }
 
   .service-grid,
-  .process-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  .process-grid,
   .portfolio-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1250,7 +1517,9 @@ h2 {
   }
 
   .service-grid,
-  .process-grid {
+  .process-grid,
+  .portfolio-grid,
+  .service-list {
     grid-template-columns: 1fr;
   }
 
@@ -1301,20 +1570,14 @@ h2 {
     margin-bottom: 45px;
   }
 
-  .inner-split,
-  .contact-layout {
-    grid-template-columns: 1fr;
-    gap: 25px;
-  }
-
-  .value-grid,
-  .service-list,
-  .portfolio-grid {
-    grid-template-columns: 1fr;
-  }
-
   .service-list h2 {
     font-size: 26px;
+  }
+
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    font-size: 16px;
   }
 
   .whatsapp-float {
@@ -1322,5 +1585,12 @@ h2 {
     bottom: 14px;
     padding: 10px 14px;
     font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-art {
+    transform: scale(0.68);
+    height: 250px;
   }
 }
